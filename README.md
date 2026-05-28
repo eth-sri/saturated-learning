@@ -1,20 +1,49 @@
-# Saturated Learning
+<div align="center">
+  <h1>Saturated Learning</h1>
+  <p>Training and rerunning saturated learning experiments.</p>
 
-Minimal instructions for rerunning experiments.
+  <a href="https://www.python.org/">
+    <img alt="Python: >=3.10" src="https://img.shields.io/badge/Python-%3E%3D3.10-blue.svg">
+  </a>
+  <a href="https://github.com/astral-sh/uv">
+    <img alt="Managed with uv" src="https://img.shields.io/badge/Package%20manager-uv-5c5c5c.svg">
+  </a>
+  <a href="./LICENSE">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-green.svg">
+  </a>
+</div>
 
-## Setup
+---
+
+## 👋 Overview
+
+This repository contains the scripts needed to score generated traces, convert
+scores into preference data, and run DPO or RRHF-style training experiments.
+
+The minimal workflow is:
+
+1. Score traces with entropy and self-judging signals.
+2. Convert scored traces into training datasets.
+3. Train adapters from the resulting preference or ranked data.
+
+## 🚀 Setup
 
 ```bash
 uv sync
-cp .env.example .env
 ```
 
-Set `HF_NAME`, `HF_TOKEN`, and `WANDB_API_KEY` in `.env`.
+Create a `.env` file with your Hugging Face namespace and credentials:
 
-## Minimal Experiment Example
+```bash
+HF_NAME=your-huggingface-name
+HF_TOKEN=your-huggingface-token
+WANDB_API_KEY=your-wandb-api-key
+```
 
-This assumes `HF_NAME` points to your Hugging Face namespace and the source
-dataset has `question`, `generations`, and `correct_mask` columns.
+## 🧪 Minimal Experiment
+
+The example below assumes `HF_NAME` points to your Hugging Face namespace and
+the source dataset has `question`, `generations`, and `correct_mask` columns.
 
 ```bash
 export MODEL=Qwen/Qwen3-1.7B-Base
@@ -79,3 +108,15 @@ uv run python train_rrhf.py \
   --lora_alpha 64 \
   --max_seq_length "$MAX_LEN"
 ```
+
+## 🏃 Convenience Script
+
+For the full default run, use `run.sh` with the GPU index or comma-separated GPU
+list. The second argument is the seed and defaults to `42`.
+
+```bash
+bash run.sh 0 42
+```
+
+Outputs are written under `outputs/`, evaluation summaries under `output/eval/`,
+and command logs under `logs/`.
